@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, #e4f0fc, #e3f2fd);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            max-width: 500px;
+            width: 100%;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            animation: fadeIn 1s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #0097A7; 
+            margin-bottom: 20px;
+        }
+
+        #messages {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .message strong {
+            color: #0097A7; 
+        }
+
+        .message.sent {
+            background-color: #e3f2fd;
+            border-radius: 5px;
+            margin-right: 20px;
+            text-align: right;
+            align-self: flex-end;
+        }
+
+        .message.received {
+            background-color: #f7f7f7; 
+            border-radius: 5px;
+            margin-left: 20px;
+            text-align: left;
+            align-self: flex-start;
+        }
+
+        #chat-form {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #message-input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: calc(100% - 100px);
+        }
+
+        #chat-form button {
+            background: #0097A7; 
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #chat-form button:hover {
+            background: #007A7A; 
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2 class="welcome-message">Welcome to the Group Chat <strong><%= username %></strong>!</h2>
+        <ul id="messages"></ul>
+        <form id="chat-form">
+            <input id="message-input" autocomplete="off" placeholder="Type a message..." />
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('message-input');
+        const messages = document.getElementById('messages');
+        const username = "<%= username %>";
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('chat message', { user: username, message: input.value });
+                input.value = '';
+            }
+        });
+
+        socket.on('chat message', (data) => {
+            const item = document.createElement('li');
+            item.classList.add('message');
+            if (data.user === username) {
+                item.classList.add('sent');
+                item.innerHTML = `<strong>Me:</strong> ${data.message}`;
+            } else {
+                item.classList.add('received');
+                item.innerHTML = `<strong>${data.user}:</strong> ${data.message}`;
+            }
+            messages.appendChild(item);
+            messages.scrollTop = messages.scrollHeight;
+        });
+    </script>
+</body>
+</html>

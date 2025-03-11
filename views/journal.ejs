@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal App</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            margin: 20px;
+            padding: 0;
+            line-height: 1.6;
+            background: linear-gradient(45deg, #e4f0fc, #e3f2fd);
+
+        }
+
+        h1 {
+            text-align: center;
+            color: #0097A7; 
+            animation: fadeIn 2s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        form {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            animation: slideIn 1s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-100px); }
+            to { transform: translateY(0); }
+        }
+
+        form input, form textarea, form button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        form button {
+            background: #0097A7; 
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+            background: #007A7A; 
+        }
+
+        .entries {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .entry {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            animation: fadeIn 1s;
+        }
+
+        .previous {
+            background-color: #0097A7; 
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .entry h2 {
+            font-size: 18px;
+            margin-top: 0;
+        }
+
+        .entry small {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Journal</h1>
+    <form action="/add-entry" method="POST">
+        <input type="text" name="title" placeholder="Journal Title" required>
+        <textarea name="content" placeholder="Write your journal here..." required></textarea>
+        <button type="submit">Add Entry</button>
+    </form>
+    <div class="entries">
+        <% if (entries.length === 0) { %>
+            <p>No journal entries yet. Start writing!</p>
+        <% } else { %>
+            <h2 class="previous">Previous Journals</h2>
+            <% entries.slice().reverse().forEach(entry => { %>
+                <div class="entry">
+                    <h2><%= entry.title %></h2>
+                    <p><%= entry.content %></p>
+                    <small><%= entry.date.toLocaleString() %></small>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+</body>
+</html>

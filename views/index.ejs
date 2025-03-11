@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login / Signup</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+--primary-color: #0097A7; 
+--secondary-color: #007A7A; 
+--light-color: #f0f8ff; 
+--text-color: #333; 
+--white-color: #fff; 
+--box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+body {
+font-family: 'Roboto', sans-serif;
+background: linear-gradient(to right, #000000, var(--primary-color));
+color: var(--text-color);
+margin: 0;
+padding: 0;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 100vh;
+}
+
+.container {
+display: flex;
+gap: 30px;
+flex-wrap: wrap;
+max-width: 1200px;
+padding: 20px;
+align-items: stretch;
+justify-content: center;
+}
+
+.new-box {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+flex: 1;
+min-width: 300px;
+padding: 20px;
+background-color: rgba(255, 255, 255, 0.1);
+border-radius: 10px;
+text-align: center;
+box-shadow: var(--box-shadow);
+}
+
+.box1 h1, .box2 h1 {
+color: var(--white-color);
+margin: 0 0 20px;
+}
+
+.new-container {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+}
+
+#canvas {
+height: 40vmin;
+width: 40vmin;
+margin-top: 20px;
+border-radius: 50%;
+}
+
+form {
+background: rgba(255, 255, 255, 0.8);
+padding: 30px;
+border-radius: 12px;
+box-shadow: var(--box-shadow);
+width: 350px;
+margin: 20px;
+backdrop-filter: blur(5px);
+}
+
+form h3 {
+color: var(--primary-color);
+text-align: center;
+margin-bottom: 20px;
+font-weight: 500;
+}
+
+form input {
+width: 100%;
+padding: 12px;
+margin: 12px 0;
+border-radius: 8px;
+border: 1px solid #ddd;
+font-size: 16px;
+transition: border-color 0.3s ease;
+}
+
+form input:focus {
+border-color: var(--primary-color);
+outline: none;
+}
+
+form button {
+width: 100%;
+padding: 14px;
+background: var(--primary-color);
+border: none;
+color: var(--white-color);
+border-radius: 8px;
+font-size: 18px;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+
+form button:hover {
+background: var(--secondary-color);
+}
+
+.message {
+color: #ff4d4d;
+font-size: 16px;
+text-align: center;
+margin-bottom: 15px;
+}
+
+.google {
+background-color: #4285F4;
+color: var(--white-color);
+padding: 14px 24px;
+border-radius: 8px;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+transition: background-color 0.3s ease;
+}
+
+.google:hover {
+background-color: #357AE8;
+}
+
+@media (max-width: 1058px) {
+.container {
+flex-direction: column;
+align-items: center;
+}
+
+#canvas {
+height: 50vmin;
+width: 50vmin;
+}
+}
+
+@media (max-width: 600px) {
+form {
+width: 90%;
+}
+}
+
+#particles-js {
+position: fixed;
+width: 100%;
+height: 100%;
+top: 0;
+left: 0;
+z-index: -1;
+}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</head>
+<body>
+<div id="particles-js"></div>
+
+<div class="container">
+<div class="new-box">
+<div class="box1">
+<h1 class="animate__animated animate__fadeIn">Welcome to MoodBloom</h1>
+<h2 style="color: var(--white-color);">Your journey to mental awareness starts here!</h2>
+</div>
+<div class="new-container">
+<canvas id="canvas" width="700px" height="700px"></canvas>
+</div>
+</div>
+
+<div class="box2">
+<h1 class="animate__animated animate__fadeIn">Signup / Login</h1>
+<div class="message"><%= message || "" %></div>
+
+<form method="POST" action="/signup" class="animate__animated animate__slideInLeft">
+<h3>Sign Up</h3>
+<input type="text" name="name" placeholder="Name" required>
+<input type="number" name="age" placeholder="Age" required>
+<input type="email" name="email" placeholder="Email" required>
+<input type="password" name="password" placeholder="Password" required>
+<button type="submit">Sign Up</button>
+</form>
+
+<form method="POST" action="/login" class="animate__animated animate__slideInRight">
+<h3>Login</h3>
+<input type="email" name="email" placeholder="Email" required>
+<input type="password" name="password" placeholder="Password" required>
+<button type="submit">Login</button>
+</form>
+
+<a href="http://localhost:3000" class="google animate__animated animate__fadeInUp">
+Login using Google
+</a>
+</div>
+</div>
+
+<script src="https://unpkg.com/@rive-app/canvas"></script>
+<script>
+const r = new rive.Rive({
+src: "/emoji.riv",
+canvas: document.getElementById("canvas"),
+autoplay: true,
+onLoad: () => {
+r.resizeDrawingSurfaceToCanvas();
+},
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+particlesJS.load('particles-js', 'particles.json', function() {
+console.log('particles.json loaded...');
+});
+</script>
+</body>
+</html>

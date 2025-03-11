@@ -1,0 +1,84 @@
+.breathing-container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .techniques {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .technique-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    transition: transform 0.2s ease;
+  }
+  
+  .technique-button:hover {
+    transform: scale(1.1);
+  }
+  
+  .technique-button.active {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .breathing-box {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+  }
+  
+  .step {
+    font-size: 1.5rem;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  .counter {
+    font-size: 2rem;
+    margin-top: 10px;
+  }
+  
+  .controls {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .control-button {
+    padding: 8px 15px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .control-button:hover {
+    background-color: #ddd;
+  }
+  
+  .stop {
+    background-color: red;
+    color: white;
+  }
+  
+  .stop:hover {
+    background-color: darkred;
+  }
+  

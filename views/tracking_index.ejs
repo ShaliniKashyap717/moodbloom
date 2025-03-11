@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Tracker</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #0097A7;
+            --secondary: #007A7A;
+            --accent: #4DB6AC;
+            --bg-gradient: linear-gradient(50deg, #f0f8ff 0%, #ffffff 100%);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, #e4f0fc, #e3f2fd);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--text-color);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin: 2rem 0;
+            text-align: center;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .mood-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            padding: 0 1rem;
+        }
+
+        .mood-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.2rem;
+            border-radius: 1rem;
+            background: var(--card-bg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 120px;
+            backdrop-filter: blur(8px);
+            text-align: center;
+        }
+
+        .mood-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .mood-item label {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .mood-item input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .mood-item input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .emoji {
+            font-size: 2rem;
+            margin-top: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        button[type="submit"] {
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 2.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+            margin: 1rem 0;
+        }
+
+        button[type="submit"]:hover {
+            background: var(--secondary);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        .chart-insight-container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .chart {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 1s ease-in;
+            backdrop-filter: blur(8px);
+            position: relative; 
+        }
+
+        .insight-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            animation: slideUp 0.8s ease-out;
+            border-left: 4px solid var(--primary);
+            backdrop-filter: blur(8px);
+            height: 100%; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .insight-card h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .insight-content {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-color);
+            white-space: pre-wrap;
+            padding: 0.5rem 0;
+        }
+
+        .insight-content strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .chart-animator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            overflow: hidden;
+            pointer-events: none; 
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            animation: float 4s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chart-insight-container {
+                grid-template-columns: 1fr;
+                padding: 0.5rem;
+            }
+
+            .insight-card {
+                border-left: none;
+                border-top: 4px solid var(--primary);
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bar {
+            fill: var(--primary);
+            transition: fill 0.3s ease;
+        }
+
+        .bar:hover {
+            fill: var(--accent);
+        }
+
+        .line {
+            stroke: var(--primary);
+            stroke-width: 2;
+            stroke-linecap: round;
+            fill: none;
+        }
+
+        .axis-label {
+            font-size: 0.8rem;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+<h1>Track Your Mood</h1>
+<form action="/" method="POST">
+    <div class="mood-container">
+        <div class="mood-item">
+            <label for="happy">Happy</label>
+            <input type="number" id="happy" name="happy" min="1" max="5" required>
+            <div class="emoji">😊</div>
+        </div>
+        <div class="mood-item">
+            <label for="calm">Calm</label>
+            <input type="number" id="calm" name="calm" min="1" max="5" required>
+            <div class="emoji">😌</div>
+        </div>
+        <div class="mood-item">
+            <label for="sad">Sad</label>
+            <input type="number" id="sad" name="sad" min="1" max="5" required>
+            <div class="emoji">😢</div>
+        </div>
+        <div class="mood-item">
+            <label for="angry">Angry</label>
+            <input type="number" id="angry" name="angry" min="1" max="5" required>
+            <div class="emoji">😠</div>
+        </div>
+        <div class="mood-item">
+            <label for="stressed">Stressed</label>
+            <input type="number" id="stressed" name="stressed" min="1" max="5" required>
+            <div class="emoji">😫</div>
+        </div>
+    </div>
+    <button type="submit">Submit</button>
+</form>
+
+<div class="chart-insight-container">
+    <div class="chart">
+        <h2>📊 Current Mood</h2>
+        <svg id="chartSvg"></svg>
+        <div class="chart-animator" id="barChartAnimator"></div> 
+    </div>
+    <div class="insight-card">
+        <h2>💡 Current Mood Insights</h2>
+        <div class="insight-content">
+            <%- currentSuggestion.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') %>
+        </div>
+    </div>
+</div>
+
+<% if (weeklySuggestion) { %>
+    <div class="chart-insight-container">
+        <div class="chart">
+            <h2>📈 Weekly Trend</h2>
+            <svg id="lineChartSvg"></svg>
+            <div class="chart-animator" id="lineChartAnimator"></div> 
+        </div>
+        <div class="insight-card">
+            <h2>Weekly Trend Insights</h2>
+            <div class="insight-content">
+                <%- weeklySuggestion.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') %>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<div id="mood-data" data-json='<%= data %>'></div>
+<div id="mood_data" data-json='<%= mood_data %>'></div>
+
+<script>
+    const moodData = JSON.parse(document.getElementById("mood_data").dataset.json);
+    const data = JSON.parse(document.getElementById("mood-data").dataset.json);
+
+    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    const width = 450 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+
+    const svg = d3.select("#chartSvg")
+        .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scaleBand()
+        .domain(data.map(d => d.label))
+        .range([0, width])
+        .padding(0.1);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.value) * 1.2])
+        .range([height, 0]);
+
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "rotate(-45)")
+        .style("text-anchor", "end");
+
+    svg.append("g")
+        .call(d3.axisLeft(y));
+
+    svg.selectAll(".bar")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => x(d.label))
+        .attr("y", d => y(d.value))
+        .attr("width", x.bandwidth())
+        .attr("height", d => height - y(d.value));
+
+    const lineSvg = d3.select("#lineChartSvg")
+        .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const xLineScale = d3.scalePoint()
+        .domain(d3.range(Math.max(1, Math.min(7, moodData.length))))
+        .range([0, width]);
+
+    const yLineScale = d3.scaleLinear()
+        .domain([1, 10])
+        .range([height, 0]);
+
+    lineSvg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xLineScale).tickFormat(i => `Day ${i + 1}`))
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-45)");
+
+    lineSvg.append("g")
+        .call(d3.axisLeft(yLineScale));
+
+    const lineGenerator = d3.line()
+        .x((d, i) => xLineScale(i))
+        .y(d => yLineScale(d.mood))
+        .curve(d3.curveMonotoneX);
+
+    lineSvg.append("path")
+        .datum(moodData.slice(-7))
+        .attr("class", "line")
+        .attr("d", lineGenerator);
+
+    function createParticles(elementId) {
+        const animator = document.getElementById(elementId);
+        if (!animator) return; 
+
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.animationDelay = `${Math.random() * 2}s`; 
+            animator.appendChild(particle);
+        }
+    }
+
+    createParticles('barChartAnimator');
+    createParticles('lineChartAnimator');
+</script>
+</body>
+</html>
